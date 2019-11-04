@@ -26,7 +26,7 @@ class App extends Component {
     this.props.setData(newthings);
   }
   addThing = (thing) => {
-    thing.id = Math.random();
+    thing.id=Math.random();
     console.log(thing);
     let things = [...this.props.data.data, thing];
     this.props.setData(things);

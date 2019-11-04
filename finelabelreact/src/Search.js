@@ -11,7 +11,7 @@ const Search = ({keyword,changeKeyword})=> {
 
   return(
     <div>
-      <input value={keyword} type='text' onChange={changeKeyword}/>
+      <input value={keyword} type='text' onChange={(e)=>changeKeyword(e.target.value)}/>
       <input type='button' value='clear' onClick={()=>{ changeKeyword('')} }/>
     </div>
   )
