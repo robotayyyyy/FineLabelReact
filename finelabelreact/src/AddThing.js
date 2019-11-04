@@ -7,9 +7,10 @@ class AddThing extends Component {
   }
   handleChange = (e) => {
     // console.log(e.target.id, e.target.value);
-    let val = e.target.id === 'label' ? (e.target.value.split(',')):(e.target.value);
+    const {id,value} = e.target
+    let val = id === 'label' ? value.split(','):value;
     this.setState({
-      [e.target.id]: val
+      [id]: val
     });
   }
   handleSubmit = (e) => {

@@ -2,6 +2,7 @@ import React from 'react'
 import ThingUrl from './ThingUrl'
 import ThingLabel from './ThingLabel'
 import ThingDelBtn from './ThingDelBtn.js'
+import {connect} from 'react-redux'
 
 
 const Things = ({things,deleteThing,editThingUrl,editThingLabel,changeKeyword}) => {
@@ -29,4 +30,8 @@ const Things = ({things,deleteThing,editThingUrl,editThingLabel,changeKeyword}) 
 
 }
 
-export default Things
+const mapStateToProps = state => ({
+  things:state.data.data
+})
+
+export default connect(mapStateToProps,null)(Things)

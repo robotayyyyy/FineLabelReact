@@ -1,4 +1,4 @@
-import React,{ useState  } from 'react'
+import React from 'react'
 
 const Search = ({keyword,changeKeyword})=> {
 
@@ -8,10 +8,7 @@ const Search = ({keyword,changeKeyword})=> {
     //changeKW(e.target.value);
     changeKeyword(e.target.value);
   }*/
-  const handleClick = (e) => {
-    //changeKW('');
-    //changeKeyword('');
-  }
+
   return(
     <div>
       <input value={keyword} type='text' onChange={changeKeyword}/>

@@ -2,71 +2,62 @@ import React, { Component } from 'react';
 import Things from './Things'
 import AddThing from './AddThing'
 import Search from './Search'
+import {connect} from 'react-redux'
+import {setKeyword,setData} from './actions/data.action'
 
 class App extends Component {
-  state = {
-    data: [
-      { id: 1, url:'https://www.youtube.com/watch?v=OxIDLw0M-m0&list=PL4cUxeGkcC9ij8CfkAY2RAGb-tmkNwQHG', label:['video','tutorial','react','redux'] },
-      { id: 2, url:'https://www.w3schools.com/react/', label:['text','tutorial','react','redux'] },
-      { id: 3, url:'https://www.livescore.com/', label:['text','football','score'] },
-      { id: 4, url:'https://medium.com/nectec/deep-reinforcement-learning-b0f4ade20024', label:['text','tutorial','reinforcement learning','ai','article'] },
-      { id: 5, url:'https://medium.com/', label:['article'] }
-    ],
-    keyword:'tutorial'
-  }
+  
   componentDidMount(){
     console.log('mounted');
-    this.filterData(this.state.keyword);
+    this.filterData(this.props.data.keyword);
     //this.setState({diaplayStatus: filteredResult},()=>{console.log(this.state.diaplayStatus);})//setState({key;value},[callback function])
   }
   filterData = (keyword)=>{
     const diaplayStatus='diaplayStatus';
-    let n = this.state.data.length;
+    let n = this.props.data.data.length;
     let filteredResult = new Array(n).fill(true);
     let newthings = [];
     for(let i=0;i<n;i++){ //add filteredResult to new column(namely 'diaplayStatus')
-      var newrow = this.state.data[i];
+      var newrow = this.props.data.data[i];
       if (!newrow.label.includes(keyword) && keyword !== ''){filteredResult[i] = false;}
       newrow[diaplayStatus]=filteredResult[i];
       newthings.push(newrow);
     }
-    this.setState({ data:newthings },()=>{ console.log(this.state.data); });
+    this.props.setData(newthings);
   }
   addThing = (thing) => {
     thing.id = Math.random();
     console.log(thing);
-    let things = [...this.state.data, thing];
-    this.setState({
-      data: things
-    });
+    let things = [...this.props.data.data, thing];
+    this.props.setData(things);
     this.changeKeyword('');
   }
   deleteThing = (id) =>{
     //console.log(id);
-    const newthings = this.state.data.filter(
+    const newthings = this.props.data.data.filter(
       record => {
         return record.id!==id
       }
     );
     //console.log(newthings);
-    this.setState({  data:newthings  });
+    this.props.setData(newthings);
   }
   editThingUrl = (id,newUrl) =>{
     //console.log(id, newUrl);
-    let newthings = this.state.data.map(
+    let newthings = this.props.data.data.map(
       record => {
         if( record.id===id){ record.url = newUrl; }
         return(record)
       }
     );
-    this.setState({  data:newthings  });
+    this.props.setData(newthings);
   }
   
   editThingLabel = (id, action, val) =>{
     val = val.toLowerCase();
     console.log(id, action, val);
     if(action === 'add'){
-      let newLabel = this.state.data.map(
+      let newLabel = this.props.data.data.map(
         record => {
           if( record.id===id){ 
             if(!record.label.includes(val)){ record.label.push(val); }
@@ -74,10 +65,10 @@ class App extends Component {
           return(record)
         }
       );
-      this.setState({  data:newLabel  });
+      this.props.setData(newLabel);
     }
     else{
-      let newLabel = this.state.data.map(
+      let newLabel = this.props.data.data.map(
         record => {
           if( record.id===id){ 
             record.label = record.label.filter((temp)=>{return temp !== val});
@@ -85,23 +76,34 @@ class App extends Component {
           return(record)
         }
       );
-      this.setState({  data:newLabel  });
+      this.props.setData(newLabel);
     }
   }
-  changeKeyword = (keyword) => {
+  changeKeyword = async keyword => {
     //console.log(keyword);
-    this.setState({keyword:keyword}, ()=>{this.filterData(keyword)} );
+    await this.props.setKeyword(keyword)
+    this.filterData(keyword);
   }
   render() {
+    if(!this.props.data) return null
     return (
       <div className="App">
         <h1>My first React app(Fine Label)</h1>
-        <Search keyword={this.state.keyword} changeKeyword={this.changeKeyword} />
-        <Things things={this.state.data} deleteThing={this.deleteThing} editThingUrl={this.editThingUrl} editThingLabel={this.editThingLabel} changeKeyword={this.changeKeyword} />
+        <Search keyword={this.props.data.keyword} changeKeyword={this.changeKeyword} />
+        <Things deleteThing={this.deleteThing} editThingUrl={this.editThingUrl} editThingLabel={this.editThingLabel} changeKeyword={this.changeKeyword} />
         <AddThing addThing={this.addThing}/>
       </div>
     );
   }
 }//how to send updated keyword to Search?
-
-export default App;
+const mapDispatchToProps = dispatch => ({
+  setKeyword:keyword=>{
+    dispatch(setKeyword(keyword))
+    return Promise.resolve()
+  },
+  setData:data=>dispatch(setData(data))
+})
+const mapStateToProps = state => ({
+  data:state.data
+})
+export default connect(mapStateToProps,mapDispatchToProps)(App);
